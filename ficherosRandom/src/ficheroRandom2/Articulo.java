@@ -49,8 +49,7 @@ public class Articulo {
 			return false;
 		}
 		else {
-			denominacion=denominacion+" ".repeat(20-denominacion.length());
-			this.denominacion = denominacion;
+			this.denominacion = denominacion+" ".repeat(20-denominacion.length());
 			return true;
 		}
 	}

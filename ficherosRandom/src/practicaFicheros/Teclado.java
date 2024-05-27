@@ -3,55 +3,60 @@ package practicaFicheros;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 public class Teclado {
-	String leerString() throws IOException{
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		String s = br.readLine();
-		return (s);
+	public static final Scanner e = new Scanner(System.in);
+	
+	public int leerInt(String mensaje) {
+		int numero = Integer.MIN_VALUE;
+		do {
+			try {
+				System.out.print(mensaje);
+				numero = Integer.parseInt(e.nextLine());
+			}catch(NumberFormatException nfe) {
+				numero = Integer.MIN_VALUE;
+			}
+			
+		}while (numero == Integer.MIN_VALUE);
+		return numero;
 	}
-	int leerInt() throws IOException{
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		int i;
-		String s=br.readLine();
-		try{
-			i=Integer.parseInt(s);   
-		}catch (NumberFormatException e){
-			i = Integer.MIN_VALUE; 
-		}
-		return (i);
+	
+	public double leerDouble(String mensaje) {
+		double numero;
+		do {
+			try {
+				System.out.print(mensaje);
+				numero = e.nextDouble();
+				e.nextLine();
+			}catch(InputMismatchException ime) {
+				numero = Double.MIN_VALUE;
+			}
+		}while (numero == Double.MIN_VALUE);
+		return numero;
 	}
-	double leerDouble() throws IOException{
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		double d;
-		String s = br.readLine();
-		try{
-			d = Double.parseDouble(s);
-		}catch(NumberFormatException e){
-			d=Double.MIN_VALUE;
-		}
-		return (d);
+	
+	public String leerString(String mensaje) {
+		String texto;
+		do {
+			System.out.print(mensaje);
+			texto = e.nextLine();
+		}while(texto.length()>25 || texto.isBlank());
+		return texto + " ".repeat(25-texto.length());
 	}
-	float leerFloat() throws IOException{
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		float f;
-		String s = br.readLine();
-		try{
-			f = Float.parseFloat(s);
-		}catch(NumberFormatException e){
-			f = Float.MIN_VALUE;
-		}
-		return f;
+	public char leerChar(String mensaje) {
+		String texto;
+		do {
+			System.out.print(mensaje);
+			texto = e.nextLine().toUpperCase();
+		}while(texto.length()!=1 || texto.isBlank());
+		return texto.charAt(0);
 	}
-	char leerChar() throws IOException{
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		char c;
-		String s=br.readLine();
-		c=s.charAt(0);
-		return c;
+	public void pulsarEnter() {
+		e.nextLine();
 	}
-	void leerSalto() throws IOException{
-	 	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-	 	br.readLine();
+	public void cerrarScanner() {
+		e.close();
 	}
 }

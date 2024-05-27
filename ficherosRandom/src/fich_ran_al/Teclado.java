@@ -11,11 +11,11 @@ public class Teclado {
 		do {
 			try {
 				System.out.print(mensaje);
-				numero = e.nextInt();
-			}catch(InputMismatchException ime) {
+				numero = Integer.parseInt(e.nextLine());
+			}catch(NumberFormatException nfe) {
 				numero = Integer.MIN_VALUE;
 			}
-			e.nextLine();
+			
 		}while (numero == Integer.MIN_VALUE);
 		return numero;
 	}

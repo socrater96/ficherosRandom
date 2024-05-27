@@ -18,36 +18,38 @@ public class FicheroRandom2 {
 			do {
 				System.out.println("Código del artículo: ");
 			}while(!articulo.setCodigo(in.nextLine()));
-			raf.seek(articulo.getCodigo()*tamanho);
-			if(raf.readInt()==0){
-				do {
-					System.out.println("Denominación: ");
-				}while(!articulo.setDenominacion(in.nextLine()));
-				do {
-					System.out.println("Stock mínimo: ");
-				}while(!articulo.setsMinimo(in.nextLine()));
-				do {
-					System.out.println("Stock máximo: ");
-				}while(!articulo.setsMaximo(in.nextLine()));
-				do {
-					System.out.println("Stock actual: ");
-				}while(!articulo.setsActual(in.nextLine()));
-				do {
-					System.out.println("Precio: ");
-				}while(!articulo.setPrecio(in.nextLine()));
-				System.out.println("Confirmar? (s/n)");
-				if(in.nextLine().equals("s")) {
-					long posicionArchivo = (long) articulo.getCodigo() * tamanho;
-					raf.seek(posicionArchivo);
-					while(posicionArchivo>raf.length()) {//Se llena de campos nulos si la posición que se quiere ocupar está fuera de los límites del tamaña del archivo en el momento
-						articuloVacio.escribirFichero(raf);
+			try {
+				raf.seek(articulo.getCodigo()*tamanho);
+				if(raf.readInt()==0){
+					do {
+						System.out.println("Denominación: ");
+					}while(!articulo.setDenominacion(in.nextLine()));
+					do {
+						System.out.println("Stock mínimo: ");
+					}while(!articulo.setsMinimo(in.nextLine()));
+					do {
+						System.out.println("Stock máximo: ");
+					}while(!articulo.setsMaximo(in.nextLine()));
+					do {
+						System.out.println("Stock actual: ");
+					}while(!articulo.setsActual(in.nextLine()));
+					do {
+						System.out.println("Precio: ");
+					}while(!articulo.setPrecio(in.nextLine()));
+					System.out.println("Confirmar? (s/n)");
+					if(in.nextLine().equals("s")) {
+						long posicionArchivo = (long) articulo.getCodigo() * tamanho;
+						raf.seek(posicionArchivo);
+						while(posicionArchivo>raf.length()) {//Se llena de campos nulos si la posición que se quiere ocupar está fuera de los límites del tamaña del archivo en el momento
+							articuloVacio.escribirFichero(raf);
+						}
+						articulo.escribirFichero(raf);
 					}
-					articulo.escribirFichero(raf);
+				}else {
+					System.out.println("Cancelado, ya hay un artículo en esa posición");
 				}
-			}else {
-				System.out.println("Cancelado, ya hay un artículo en esa posición");
-			}
-				System.out.println("Agregar otro artículo? (s/n)");
+					System.out.println("Agregar otro artículo? (s/n)");
+			}catch(EOFException eofe) {}
 				
 		}while(in.nextLine()=="s");
 		raf.close();
@@ -112,7 +114,7 @@ public class FicheroRandom2 {
 		while(li<=ls) {
 			System.out.println(cabecera);
 			clineas=0;
-			while(clineas<4) {
+			while(clineas<4 && li<=ls) {
 				try {
 					raf.seek(li * tamanho);
 					int codigo=raf.readInt();
