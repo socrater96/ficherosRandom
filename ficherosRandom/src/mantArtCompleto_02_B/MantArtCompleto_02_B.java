@@ -28,19 +28,19 @@ public class MantArtCompleto_02_B {
 				do{
 					System.out.print("\n\n\tTeclee opción? ");
 					opl = t.leerInt();
-					}while(opl == Integer.MIN_VALUE || opl < 1 || opl > 4 );
+				}while(opl == Integer.MIN_VALUE || opl < 1 || opl > 4 );
 				switch(opl){
-				case 1: 
-					listadoGeneral();
-					break;
-				case 2:
-					listadoEntreLimites();
-					break;
-				case 3:
+					case 1: 
+						listadoGeneral();
+						break;
+					case 2:
+						listadoEntreLimites();
+						break;
+					case 3:
 						listadoPedidos();
 						break;
-				}
-				}while (opl!=4);
+					}
+			}while (opl!=4);
 		}
 		return op;
 	}

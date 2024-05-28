@@ -10,19 +10,17 @@ public class FicheroRandom2 {
 	static final int tamanho = 4 + (20 + 2) + 8 + 8 + 8 + 4 + 2;
 	static final String cabecera="Codigo\tDenominación\tStock mínimo\tStock máximo\tStock actual\tPrecio\tAviso stock"+"\n"+
 	"-".repeat(100);
-	static final Articulo articuloVacio= new Articulo(0,"",0,0,0,0,' ');
+	static final Articulo articuloVacio= new Articulo(0," ".repeat(20),0,0,0,0,' ');
 	static boolean comprobarPosicion(int posicion, RandomAccessFile raf) throws IOException {
-		try {
-			raf.seek(posicion);
-			if(raf.readInt()!=0) {
-				System.out.println("Posición ocupada");
-				return false;
-			}
-		}catch(EOFException eofe) {}
-		return true;
-	}
+        if (posicion >= raf.length()) {
+            // Si la posición está fuera del tamaño actual del archivo, se considera libre
+            return true;
+        }
+        raf.seek(posicion);
+        return raf.readInt() == 0;
+    }
 	static void altas(Scanner in) throws IOException {
-		RandomAccessFile raf= new RandomAccessFile("articulos.dat", "rw");
+		RandomAccessFile raf = new RandomAccessFile("articulos.dat", "rw");
 		Articulo articulo = new Articulo();
 		do {
 			do {
@@ -47,24 +45,18 @@ public class FicheroRandom2 {
 				}while(!articulo.setPrecio(in.nextLine()));
 				System.out.println("Confirmar? (s/n)");
 				if(in.nextLine().equals("s")) {
-					if(articulo.getCodigo()*tamanho<raf.length()) {		
-						raf.seek(articulo.getCodigo()*tamanho);
-						if(raf.readInt()!=0) {
-							raf.seek(articulo.getCodigo()*tamanho);
-							articulo.escribirFichero(raf);
-						}	
-					}
-					else {
+					while(raf.length()<articulo.getCodigo()*tamanho) {//Se llena de campos nulos si la posición que se quiere ocupar está fuera de los límites del tamaña del archivo en el momento
 						raf.seek(raf.length());
-						while(raf.length()<articulo.getCodigo()*tamanho) {//Se llena de campos nulos si la posición que se quiere ocupar está fuera de los límites del tamaña del archivo en el momento
-							articuloVacio.escribirFichero(raf);
-						}
-						articulo.escribirFichero(raf);
+						articuloVacio.escribirFichero(raf);
 					}
+					raf.seek(articulo.getCodigo()*tamanho);
+					articulo.escribirFichero(raf);
 				}
 				else
 					System.out.println("Ingreso cancelado");
 			}
+			else
+				System.out.println("La posición ya está ocupada");
 			System.out.println("Agregar otro artículo? (s/n)");
 		}while(in.nextLine().equalsIgnoreCase("s"));
 		raf.close();
@@ -136,12 +128,12 @@ public class FicheroRandom2 {
 					int codigo=raf.readInt();
 					if(codigo!=0) {
 						String denominacion=raf.readUTF();
-						double stockAct=raf.readDouble();
 						double stockMinimo=raf.readDouble();
+						double stockAct=raf.readDouble();
 						double stockMaximo=raf.readDouble();
 						float precio=raf.readFloat();
 						char aviso=raf.readChar();
-						Articulo articulo = new Articulo(codigo, denominacion, stockAct, stockMinimo, stockMaximo, precio, aviso);
+						Articulo articulo = new Articulo(codigo, denominacion, stockMinimo, stockMaximo, stockAct,precio, aviso);
 						System.out.println(articulo);
 						clineas++;
 					}
@@ -222,7 +214,6 @@ public class FicheroRandom2 {
 	}
 	public static void main(String[] args) throws IOException, EOFException {
 		Scanner in = new Scanner(System.in);
-		
 		RandomAccessFile raf = new RandomAccessFile("articulos.dat", "rw");//Se abre este primera vez para asegurarse de que existe y no salga la FileNotFound Exception
 		raf.close();
 		int w=0;
