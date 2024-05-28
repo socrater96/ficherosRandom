@@ -11,6 +11,16 @@ public class FicheroRandom2 {
 	static final String cabecera="Codigo\tDenominación\tStock mínimo\tStock máximo\tStock actual\tPrecio\tAviso stock"+"\n"+
 	"-".repeat(100);
 	static final Articulo articuloVacio= new Articulo(0,"",0,0,0,0,' ');
+	static boolean comprobarPosicion(int posicion, RandomAccessFile raf) throws IOException {
+		try {
+			raf.seek(posicion);
+			if(raf.readInt()!=0) {
+				System.out.println("Posición ocupada");
+				return false;
+			}
+		}catch(EOFException eofe) {}
+		return true;
+	}
 	static void altas(Scanner in) throws IOException {
 		RandomAccessFile raf= new RandomAccessFile("articulos.dat", "rw");
 		Articulo articulo = new Articulo();
@@ -18,40 +28,45 @@ public class FicheroRandom2 {
 			do {
 				System.out.println("Código del artículo: ");
 			}while(!articulo.setCodigo(in.nextLine()));
-			try {
-				raf.seek(articulo.getCodigo()*tamanho);
-				if(raf.readInt()==0){
-					do {
-						System.out.println("Denominación: ");
-					}while(!articulo.setDenominacion(in.nextLine()));
-					do {
-						System.out.println("Stock mínimo: ");
-					}while(!articulo.setsMinimo(in.nextLine()));
-					do {
-						System.out.println("Stock máximo: ");
-					}while(!articulo.setsMaximo(in.nextLine()));
-					do {
-						System.out.println("Stock actual: ");
-					}while(!articulo.setsActual(in.nextLine()));
-					do {
-						System.out.println("Precio: ");
-					}while(!articulo.setPrecio(in.nextLine()));
-					System.out.println("Confirmar? (s/n)");
-					if(in.nextLine().equals("s")) {
-						long posicionArchivo = (long) articulo.getCodigo() * tamanho;
-						raf.seek(posicionArchivo);
-						while(posicionArchivo>raf.length()) {//Se llena de campos nulos si la posición que se quiere ocupar está fuera de los límites del tamaña del archivo en el momento
+			
+			if(comprobarPosicion(articulo.getCodigo()*tamanho, raf)) {
+				do {
+					System.out.println("Denominación: ");
+				}while(!articulo.setDenominacion(in.nextLine()));
+				do {
+					System.out.println("Stock mínimo: ");
+				}while(!articulo.setsMinimo(in.nextLine()));
+				do {
+					System.out.println("Stock máximo: ");
+				}while(!articulo.setsMaximo(in.nextLine()));
+				do {
+					System.out.println("Stock actual: ");
+				}while(!articulo.setsActual(in.nextLine()));
+				do {
+					System.out.println("Precio: ");
+				}while(!articulo.setPrecio(in.nextLine()));
+				System.out.println("Confirmar? (s/n)");
+				if(in.nextLine().equals("s")) {
+					if(articulo.getCodigo()*tamanho<raf.length()) {		
+						raf.seek(articulo.getCodigo()*tamanho);
+						if(raf.readInt()!=0) {
+							raf.seek(articulo.getCodigo()*tamanho);
+							articulo.escribirFichero(raf);
+						}	
+					}
+					else {
+						raf.seek(raf.length());
+						while(raf.length()<articulo.getCodigo()*tamanho) {//Se llena de campos nulos si la posición que se quiere ocupar está fuera de los límites del tamaña del archivo en el momento
 							articuloVacio.escribirFichero(raf);
 						}
 						articulo.escribirFichero(raf);
 					}
-				}else {
-					System.out.println("Cancelado, ya hay un artículo en esa posición");
 				}
-					System.out.println("Agregar otro artículo? (s/n)");
-			}catch(EOFException eofe) {}
-				
-		}while(in.nextLine()=="s");
+				else
+					System.out.println("Ingreso cancelado");
+			}
+			System.out.println("Agregar otro artículo? (s/n)");
+		}while(in.nextLine().equalsIgnoreCase("s"));
 		raf.close();
 	}
 	static void bajas(Scanner in) throws IOException {
@@ -67,13 +82,15 @@ public class FicheroRandom2 {
 		}
 		else {
 			raf.seek(posicionArchivo);
-			if(raf.readInt()==0) {
+			int codigo=raf.readInt();
+			if(codigo==0) {
 				System.out.println("No hay artículo con es código");
 			}
 			else {
-				Articulo articulo = new Articulo(raf.readInt(),raf.readUTF(),raf.readDouble(),raf.readDouble(),raf.readDouble(),raf.readFloat(),raf.readChar());
+				raf.seek(posicionArchivo);
+				Articulo articulo = new Articulo(codigo,raf.readUTF(),raf.readDouble(),raf.readDouble(),raf.readDouble(),raf.readFloat(),raf.readChar());
 				System.out.println("Desea borrar el artículo: "+articulo+"(s para confirmar)");
-				if(in.nextLine()=="s") {
+				if(in.nextLine().equals("s")) {
 					raf.seek(posicionArchivo);
 					articuloVacio.escribirFichero(raf);
 					System.out.println("Borrado completado");
@@ -83,8 +100,6 @@ public class FicheroRandom2 {
 			}
 		}
 		raf.close();
-	
-		
 	}
 	static void listLimites(Scanner in) throws IOException {
 		int li=0;
@@ -92,6 +107,7 @@ public class FicheroRandom2 {
 		int clineas=0;
 		int pagina=0;
 		RandomAccessFile raf = new RandomAccessFile("articulos.dat","r");
+		
 		do {
 			System.out.println("Limite superior: ");
 			try {
@@ -111,10 +127,10 @@ public class FicheroRandom2 {
 			if(li*tamanho>raf.length())
 				System.out.println(" El límite inferior está por encima del último artículo");
 		}while(ls<li || (li*tamanho)>raf.length());
-		while(li<=ls) {
+		while(li<=ls && (li*tamanho)<raf.length()) {
 			System.out.println(cabecera);
 			clineas=0;
-			while(clineas<4 && li<=ls) {
+			while(clineas<4 && li<=ls && (li*tamanho)<raf.length()) {
 				try {
 					raf.seek(li * tamanho);
 					int codigo=raf.readInt();
@@ -142,10 +158,37 @@ public class FicheroRandom2 {
 
 	
 	static void listGeneral() throws IOException {
+		Scanner in=new Scanner(System.in);
 		RandomAccessFile raf = new RandomAccessFile("articulos.dat","r");
-		while(raf.length()<raf.getFilePointer()) {
-			
+		int codigo;
+		int clineas;
+		int pagina=0;
+		while(raf.length()>raf.getFilePointer()) {
+			System.out.println(cabecera);
+			clineas=0;
+			while(clineas<4 && raf.length()>raf.getFilePointer()) {
+				try {
+					codigo=raf.readInt();
+					if(codigo!=0) {
+						String denominacion=raf.readUTF();
+						double stockAct=raf.readDouble();
+						double stockMinimo=raf.readDouble();
+						double stockMaximo=raf.readDouble();
+						float precio=raf.readFloat();
+						char aviso=raf.readChar();
+						Articulo articulo = new Articulo(codigo, denominacion, stockAct, stockMinimo, stockMaximo, precio, aviso);
+						System.out.println(articulo);
+						clineas++;
+						
+					}
+				}catch(EOFException eofe) {}
+				pagina++;
+				System.out.println("Pagina "+pagina+"\tIntro para continuar");
+				in.nextLine();
+			}
 		}
+		raf.close();
+		in.close();
 	}
 	static void listPedidos() {
 		
@@ -218,5 +261,6 @@ public class FicheroRandom2 {
 	        if (w == 6)
 	        	break;
 	        }
+		in.close();
 	    }
 }

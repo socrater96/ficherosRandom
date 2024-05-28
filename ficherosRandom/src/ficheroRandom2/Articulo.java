@@ -16,7 +16,6 @@ public class Articulo {
 
 	public Articulo(){};
 	public Articulo(int codigo, String denominacion, double sActual, double sMinimo, double sMaximo, float precio, char aviso) {
-		
 		this.codigo=codigo;
 		this.denominacion=denominacion;
 		this.sActual=sActual;

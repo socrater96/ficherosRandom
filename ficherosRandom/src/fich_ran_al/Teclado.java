@@ -19,7 +19,6 @@ public class Teclado {
 		}while (numero == Integer.MIN_VALUE);
 		return numero;
 	}
-	
 	public double leerDouble(String mensaje) {
 		double numero;
 		do {
