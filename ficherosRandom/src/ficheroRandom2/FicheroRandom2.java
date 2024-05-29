@@ -149,39 +149,56 @@ public class FicheroRandom2 {
     }
 
 	
-	static void listGeneral() throws IOException {
-		Scanner in=new Scanner(System.in);
-		RandomAccessFile raf = new RandomAccessFile("articulos.dat","r");
-		int codigo;
-		int clineas;
-		int pagina=0;
-		while(raf.length()>raf.getFilePointer()) {
-			System.out.println(cabecera);
-			clineas=0;
-			while(clineas<4 && raf.length()>raf.getFilePointer()) {
-				try {
-					codigo=raf.readInt();
-					if(codigo!=0) {
-						String denominacion=raf.readUTF();
-						double stockAct=raf.readDouble();
-						double stockMinimo=raf.readDouble();
-						double stockMaximo=raf.readDouble();
-						float precio=raf.readFloat();
-						char aviso=raf.readChar();
-						Articulo articulo = new Articulo(codigo, denominacion, stockAct, stockMinimo, stockMaximo, precio, aviso);
-						System.out.println(articulo);
-						clineas++;
-						
-					}
-				}catch(EOFException eofe) {}
-				pagina++;
-				System.out.println("Pagina "+pagina+"\tIntro para continuar");
-				in.nextLine();
-			}
-		}
-		raf.close();
-		in.close();
-	}
+    static void listGeneral() throws IOException {
+        Scanner in = new Scanner(System.in);
+        RandomAccessFile raf = new RandomAccessFile("articulos.dat", "r");
+        int clineas;
+        int pagina = 0;
+
+        while (raf.getFilePointer() < raf.length()) {
+            System.out.println(cabecera);  // Assuming cabecera is defined elsewhere
+            clineas = 0;
+            while (clineas < 4 && raf.getFilePointer() < raf.length()) {
+                try {
+                    int codigo = raf.readInt();
+                    if (codigo != 0) {
+                        String denominacion = raf.readUTF();
+                        double stockAct = raf.readDouble();
+                        double stockMinimo = raf.readDouble();
+                        double stockMaximo = raf.readDouble();
+                        float precio = raf.readFloat();
+                        char aviso = raf.readChar();
+                        Articulo articulo = new Articulo(codigo, denominacion, stockAct, stockMinimo, stockMaximo, precio, aviso);
+                        System.out.println(articulo);
+                        clineas++;
+                    } else {
+                        // Skip the remaining fields if codigo is 0
+                        raf.readUTF();
+                        raf.readDouble();
+                        raf.readDouble();
+                        raf.readDouble();
+                        raf.readFloat();
+                        raf.readChar();
+                    }
+                } catch (EOFException eofe) {
+                    break;
+                }
+            }
+            pagina++;
+            System.out.println("Pagina " + pagina + "\tIntro para continuar");
+
+            // Check if there is another line before calling nextLine
+            if (in.hasNextLine()) {
+                in.nextLine();
+            } else {
+                break;  // Exit if no more input
+            }
+        }
+
+        raf.close();
+        in.close();
+    }
+
 	static void listPedidos() {
 		
 	}

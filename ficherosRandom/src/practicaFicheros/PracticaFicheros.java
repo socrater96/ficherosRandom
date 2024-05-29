@@ -65,7 +65,10 @@ public class PracticaFicheros {
 		raf.close();
 		
 	}
-	static void bajas(Scanner in) {
+	static void modificaciones(Scanner in) {
+		Persona persona = new Persona();
+		Teclado t = new Teclado();
+		System.out.println("Codigo de persona a cambiar");
 		
 	}
 	public static void main(String []args) throws IOException {
@@ -80,16 +83,17 @@ public class PracticaFicheros {
 				altas(in);
 				break;
 			case 2:
-				bajas(in);
+//				bajas(in);
 				break;
 			case 3:
+				modificaciones(in);
 				break;
 			case 4:
 				break;
 			case 5:
 				break;
 			case 6:
-				
+				System.out.println("FIN DE PROGRAMA");
 			}
 		}while(opcion!=6);
 	}
