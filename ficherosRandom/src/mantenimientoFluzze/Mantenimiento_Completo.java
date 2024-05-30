@@ -7,7 +7,7 @@ import java.io.RandomAccessFile;
 
 public class Mantenimiento_Completo {
 	static final Teclado t = new Teclado();
-    static final String FILEROUTE = "C:\\Users\\josea\\Desktop\\DAM\\DAM1\\PROGRAMACIÓN\\";
+    static final String FILEROUTE = "";
     static final int tam = 4 + (20+2) + 8 + 8 + 8 + 4 + 2;
 	static final Articulo arvac = new Articulo(0," ".repeat(20),0,0,0,0);
     
@@ -92,7 +92,6 @@ public class Mantenimiento_Completo {
 	    raf.close();
 	}
 
-    
     void bajas() throws IOException {
     	Articulo ar = new Articulo();
     	String ruta = "mantenimiento.dat";

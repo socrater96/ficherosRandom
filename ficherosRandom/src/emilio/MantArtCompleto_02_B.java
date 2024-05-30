@@ -1,4 +1,4 @@
-package mantArtCompleto_02_B;
+package emilio;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 public class MantArtCompleto_02_B {
